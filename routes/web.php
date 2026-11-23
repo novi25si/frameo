@@ -1,22 +1,42 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookingController; // Pastikan controller ini dibuat jika pakai database
+use Illuminate\Http\Request;
 
-// Halaman Beranda
+// 01. Halaman Beranda
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Halaman Form Reservasi
+// 02. Halaman Daftar Paket Foto
+Route::get('/paket-foto', function () {
+    return view('paket');
+})->name('paket.index');
+
+// 03. Halaman Form Reservasi
 Route::get('/reservasi', function () {
     return view('reservasi');
 })->name('reservasi');
 
-// Proses Simpan Reservasi (akan dihubungkan ke Controller & Database)
-Route::post('/reservasi', [BookingController::class, 'store'])->name('reservasi.store');
+// Proses Simpan Data Form ke Session lalu pindah ke Status
+Route::post('/reservasi', function (Request $request) {
+    $dataReservasi = [
+        'kode'           => '#BK' . rand(100, 999),
+        'nama'           => $request->nama,
+        'paket'          => $request->paket,
+        'tanggal'        => date('d/m/Y', strtotime($request->tanggal)),
+        'jam'            => $request->jam,
+        'payment_method' => $request->payment_method ?? 'Transfer Bank / QRIS',
+        'catatan'        => $request->catatan,
+    ];
 
-// Halaman Cek Status Reservasi
+    session(['reservasi_terbaru' => $dataReservasi]);
+
+    return redirect()->route('status');
+})->name('reservasi.store');
+
+// 04. Halaman Status Reservasi
 Route::get('/status', function () {
-    return view('status');
+    $reservasi = session('reservasi_terbaru');
+    return view('status', compact('reservasi'));
 })->name('status');
