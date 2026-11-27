@@ -1,481 +1,228 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FRAMEO - Form Reservasi</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+@extends('layouts.admin.app')
 
-    body {
-      background-color: #fffaf5;
-      color: #362614;
-    }
+@section('title', 'FRAMEO - Form Reservasi')
 
-    /* Navbar Cokelat Gelap */
-    .navbar {
-      background-color: #362614;
-      padding: 18px 10%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #ffffff;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-decoration: none;
-      color: #ffffff;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      color: #e2d5c8;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: #ff7300;
-      font-weight: 700;
-    }
-
-    /* Kontainer Utama */
-    .container {
-      max-width: 1060px;
-      margin: 36px auto;
-      padding: 0 24px;
-    }
-
-    .page-header {
-      margin-bottom: 24px;
-    }
-
-    .page-title {
-      font-size: 26px;
-      font-weight: 800;
-      color: #362614;
-      margin-bottom: 4px;
-    }
-
-    .page-subtitle {
-      font-size: 14px;
-      color: #78716c;
-    }
-
-    /* Layout 2 Kolom: Form Kiri + Ringkasan Kanan */
-    .booking-layout {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .card {
-      background-color: #ffffff;
-      border: 1px solid #fed7aa;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 12px rgba(54, 38, 20, 0.04);
-    }
-
-    .step-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #362614;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .step-badge {
-      background-color: #ffedd5;
-      color: #ff7300;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .form-group {
-      margin-bottom: 22px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid #fed7aa;
-      border-radius: 10px;
-      font-size: 14px;
-      color: #362614;
-      transition: 0.2s;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: #ff7300;
-      box-shadow: 0 0 0 3px rgba(255, 115, 0, 0.14);
-    }
-
-    /* Pilihan Paket Model Kartu */
-    .paket-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .paket-option input[type="radio"] {
-      display: none;
-    }
-
-    .paket-box {
-      border: 1.5px solid #fed7aa;
-      border-radius: 12px;
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .paket-box:hover {
-      border-color: #ff7300;
-      background-color: #fffaf5;
-    }
-
-    .paket-option input[type="radio"]:checked + .paket-box {
-      border-color: #ff7300;
-      background-color: #ffedd5;
-    }
-
-    .paket-name {
-      font-weight: 800;
-      font-size: 15px;
-      color: #362614;
-      margin-bottom: 4px;
-    }
-
-    .paket-price {
-      font-weight: 700;
-      font-size: 13.5px;
-      color: #ff7300;
-      margin-bottom: 6px;
-    }
-
-    .paket-meta {
-      font-size: 11.5px;
-      color: #78716c;
-    }
-
-    /* Pilihan Jam Model Tombol Grid */
-    .time-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .time-option input[type="radio"] {
-      display: none;
-    }
-
-    .time-slot {
-      display: block;
-      text-align: center;
-      padding: 10px 8px;
-      border: 1.5px solid #fed7aa;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #362614;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .time-slot:hover {
-      border-color: #ff7300;
-    }
-
-    .time-option input[type="radio"]:checked + .time-slot {
-      background-color: #ff7300;
-      border-color: #ff7300;
-      color: #ffffff;
-    }
-
-    /* Ringkasan Pesanan (Kanan) */
-    .summary-card {
-      background-color: #362614;
-      color: #ffffff;
-      border-radius: 16px;
-      padding: 26px;
-      position: sticky;
-      top: 24px;
-    }
-
-    .summary-title {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #573d20;
-      margin-bottom: 18px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13.5px;
-      margin-bottom: 12px;
-      color: #e2d5c8;
-    }
-
-    .summary-row strong {
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    .summary-total {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px dashed #75532c;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .summary-total span {
-      font-size: 13px;
-      color: #e2d5c8;
-    }
-
-    .summary-total .total-price {
-      font-size: 22px;
-      font-weight: 800;
-      color: #ff7300;
-    }
-
-    .info-note {
-      background-color: rgba(255, 115, 0, 0.15);
-      border: 1px solid rgba(255, 115, 0, 0.4);
-      color: #fed7aa;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 12px;
-      line-height: 1.5;
-      margin: 20px 0;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background-color: #ff7300;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn-submit:hover {
-      background-color: #ea580c;
-    }
-
-    @media (max-width: 820px) {
-      .booking-layout {
-        grid-template-columns: 1fr;
-      }
-      .paket-options {
-        grid-template-columns: 1fr;
-      }
-      .time-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Navbar -->
-  <header class="navbar">
-    <a href="{{ route('home') }}" class="logo">FRAMEO</a>
-    <nav class="nav-links">
-      <a href="{{ route('home') }}">Beranda</a>
-      <a href="{{ route('paket.index') }}">Paket Foto</a>
-      <a href="{{ route('reservasi') }}" class="active">Reservasi</a>
-      <a href="{{ route('status') }}">Status</a>
-    </nav>
-  </header>
-
-  <main class="container">
+@section('content')
     <div class="page-header">
-      <h1 class="page-title">RESERVASI SESI FOTO</h1>
-      <p class="page-subtitle">Pilih paket favoritmu dan tentukan jadwal kedatangan di studio.</p>
+        <h1 class="page-title">RESERVASI SESI FOTO</h1>
+        <p class="page-subtitle">Pilih paket favoritmu, tentukan jadwal kedatangan, dan pilih metode pembayaran.</p>
     </div>
-
-    <form action="{{ route('reservasi.store') }}" method="POST" class="booking-layout">
-      @csrf
-
-      <!-- Kolom Kiri: Pilihan Form -->
-      <div class="card">
-        <!-- Langkah 1: Nama -->
-        <div class="form-group">
-          <div class="step-title"><span class="step-badge">1</span> Data Pemesan</div>
-          <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan nama lengkap Anda" required>
+    @if ($errors->has('jadwal'))
+        <div
+            style="background-color: #fee2e2; border: 1.5px solid #fca5a5; color: #991b1b; padding: 14px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 600; margin-bottom: 20px;">
+            {{ $errors->first('jadwal') }}
         </div>
+    @endif
 
-        <!-- Langkah 2: Pilih Paket -->
-        <div class="form-group">
-          <div class="step-title"><span class="step-badge">2</span> Pilih Paket Foto</div>
-          <div class="paket-options">
-            <label class="paket-option">
-              <input type="radio" name="paket" value="Basic" data-harga="Rp75.000" {{ request('paket', 'Basic') == 'Basic' ? 'checked' : '' }}>
-              <div class="paket-box">
-                <div>
-                  <div class="paket-name">Basic</div>
-                  <div class="paket-price">Rp75.000</div>
+
+    <form action="{{ route('reservasi.store') }}" method="POST" enctype="multipart/form-data" class="booking-layout">
+        @csrf
+
+        <!-- Kolom Kiri: Pilihan Form -->
+        <div class="card">
+            <!-- Langkah 1: Nama -->
+            <div class="form-group">
+                <div class="step-title"><span class="step-badge">1</span> Data Pemesan</div>
+                <input type="text" id="nama" name="nama" class="form-control"
+                    placeholder="Masukkan nama lengkap Anda" required>
+            </div>
+
+            <!-- Langkah 2: Pilih Paket -->
+            <div class="form-group">
+                <div class="step-title"><span class="step-badge">2</span> Pilih Paket Foto</div>
+                <div class="paket-options">
+                    <label class="paket-option">
+                        <input type="radio" name="paket" value="Basic" data-harga="Rp75.000"
+                            {{ request('paket', 'Basic') == 'Basic' ? 'checked' : '' }}>
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">Basic</div>
+                                <div class="paket-price">Rp75.000</div>
+                            </div>
+                            <div class="paket-meta">1-2 Orang • 15 Menit</div>
+                        </div>
+                    </label>
+
+                    <label class="paket-option">
+                        <input type="radio" name="paket" value="Couple" data-harga="Rp120.000"
+                            {{ request('paket') == 'Couple' ? 'checked' : '' }}>
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">Couple</div>
+                                <div class="paket-price">Rp120.000</div>
+                            </div>
+                            <div class="paket-meta">2 Orang • 25 Menit</div>
+                        </div>
+                    </label>
+
+                    <label class="paket-option">
+                        <input type="radio" name="paket" value="Group" data-harga="Rp180.000"
+                            {{ request('paket') == 'Group' ? 'checked' : '' }}>
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">Group</div>
+                                <div class="paket-price">Rp180.000</div>
+                            </div>
+                            <div class="paket-meta">3-6 Orang • 30 Menit</div>
+                        </div>
+                    </label>
                 </div>
-                <div class="paket-meta">1-2 Orang • 15 Menit</div>
-              </div>
-            </label>
+            </div>
 
-            <label class="paket-option">
-              <input type="radio" name="paket" value="Couple" data-harga="Rp120.000" {{ request('paket') == 'Couple' ? 'checked' : '' }}>
-              <div class="paket-box">
-                <div>
-                  <div class="paket-name">Couple</div>
-                  <div class="paket-price">Rp120.000</div>
+            <!-- Langkah 3: Tanggal -->
+            <div class="form-group">
+                <div class="step-title"><span class="step-badge">3</span> Tanggal Kedatangan</div>
+                <input type="date" id="tanggal" name="tanggal" class="form-control" required>
+            </div>
+
+            <!-- Langkah 4: Jam Sesi -->
+            <div class="form-group">
+                <div class="step-title"><span class="step-badge">4</span> Pilih Jam Sesi</div>
+                <div class="time-grid">
+                    @foreach (['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '18:30', '19:30'] as $jam)
+                        <label class="time-option">
+                            <input type="radio" name="jam" value="{{ $jam }}"
+                                {{ $loop->first ? 'checked' : '' }}>
+                            <span class="time-slot">{{ $jam }}</span>
+                        </label>
+                    @endforeach
                 </div>
-                <div class="paket-meta">2 Orang • 25 Menit</div>
-              </div>
-            </label>
+            </div>
 
-            <label class="paket-option">
-              <input type="radio" name="paket" value="Group" data-harga="Rp150.000" {{ request('paket') == 'Group' ? 'checked' : '' }}>
-              <div class="paket-box">
-                <div>
-                  <div class="paket-name">Group</div>
-                  <div class="paket-price">Rp150.000</div>
+
+            <!-- Langkah 5: Metode Pembayaran -->
+            <div class="form-group" style="margin-bottom: 0;">
+                <div class="step-title"><span class="step-badge">5</span> Metode Pembayaran</div>
+                <div class="paket-options">
+                    <label class="paket-option">
+                        <input type="radio" name="metode_pembayaran" value="QRIS" checked>
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">QRIS</div>
+                                <div class="paket-price">Otomatis</div>
+                            </div>
+                            <div class="paket-meta">Dana, OVO, GoPay, ShopeePay & M-Banking</div>
+                        </div>
+                    </label>
+
+                    <label class="paket-option">
+                        <input type="radio" name="metode_pembayaran" value="Transfer Bank">
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">Transfer Bank</div>
+                                <div class="paket-price">BCA</div>
+                            </div>
+                            <div class="paket-meta">Transfer manual ke rekening studio</div>
+                        </div>
+                    </label>
+
+                    <label class="paket-option">
+                        <input type="radio" name="metode_pembayaran" value="Bayar di Studio">
+                        <div class="paket-box">
+                            <div>
+                                <div class="paket-name">Di Studio</div>
+                                <div class="paket-price">On The Spot</div>
+                            </div>
+                            <div class="paket-meta">Tunai atau Debit saat tiba di kasir</div>
+                        </div>
+                    </label>
                 </div>
-                <div class="paket-meta">Maks. 6 Orang • 30 Menit</div>
-              </div>
-            </label>
-          </div>
+
+                <!-- Panel 1: Gambar QRIS (Tampil saat QRIS dipilih) -->
+                <div id="panel-qris" class="payment-detail-box">
+                    <div class="qris-box" style="margin-bottom: 0;">
+                        <img src="{{ asset('pembayaran.png') }}" onerror="this.onerror=null; this.src='/pembayaran.png';"
+                            alt="QRIS FRAMEO" class="qris-img">
+                        <div>
+                            <strong style="font-size: 14px;">Scan QRIS FRAMEO STUDIO</strong>
+                            <p style="margin-top: 4px; color: #78716c;">Scan menggunakan Dana, OVO, GoPay, ShopeePay,
+                                atau Mobile Banking sesuai nominal total bayar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 2: Rekening BCA (Tampil saat Transfer Bank dipilih) -->
+                <div id="panel-transfer" class="payment-detail-box" style="display: none;">
+                    <div class="rek-box" style="margin-bottom: 0;">
+                        <div>
+                            <div style="font-size: 12px; color: #78716c;">Bank Central Asia (BCA) • a.n. <strong>FRAMEO
+                                    STUDIO</strong></div>
+                            <div class="rek-number" id="no-rek">1234567890</div>
+                        </div>
+                        <button type="button" class="btn-copy" onclick="salinRekening()">Salin No. Rek</button>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Info Bayar di Studio -->
+                <div id="panel-studio" class="payment-detail-box" style="display: none;">
+                    <strong>Info Bayar di Studio:</strong> Tidak perlu upload bukti pembayaran. Silakan bayar tunai/debit di
+                    meja kasir maksimal 10 menit sebelum sesi dimulai.
+                </div>
+
+                <!-- 1 Kotak Upload Bukti Pembayaran (Gabungan untuk QRIS & Transfer Bank) -->
+                <div id="box-upload-bukti" class="upload-area" style="margin-top: 14px;">
+                    <label>Upload Bukti Pembayaran (JPG/PNG):</label>
+                    <div class="custom-file-wrapper">
+                        <label for="bukti_pembayaran" class="btn-upload-custom">Pilih Bukti Pembayaran</label>
+                        <span id="nama-file-bukti" class="file-name-text">Belum ada file dipilih</span>
+                        <input type="file" id="bukti_pembayaran" name="bukti_pembayaran" accept="image/*"
+                            style="display: none;"
+                            onchange="document.getElementById('nama-file-bukti').textContent = this.files[0] ? this.files[0].name : 'Belum ada file dipilih'"
+                            required>
+                    </div>
+                </div>
+            </div>
+            <!-- Panel 3: Tampil saat Di Studio dipilih -->
+            <div id="panel-studio" class="payment-detail-box" style="display: none;">
+                <strong>Info Bayar di Studio:</strong> Tidak perlu upload bukti transfer. Silakan bayar tunai/debit di
+                meja kasir maksimal 10 menit sebelum sesi dimulai.
+            </div>
+        </div>
         </div>
 
-        <!-- Langkah 3: Pilih Tanggal -->
-        <div class="form-group">
-          <div class="step-title"><span class="step-badge">3</span> Pilih Tanggal</div>
-          <input type="date" id="tanggal" name="tanggal" class="form-control" required>
-        </div>
+        <!-- Kolom Kanan: Ringkasan Pesanan -->
+        <div class="summary-card">
+            <div class="summary-title">RINGKASAN RESERVASI</div>
 
-        <!-- Langkah 4: Pilih Jam -->
-        <div class="form-group">
-          <div class="step-title"><span class="step-badge">4</span> Pilih Jam Sesi</div>
-          <div class="time-grid">
-            @foreach(['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '19:00'] as $jam)
-              <label class="time-option">
-                <input type="radio" name="jam" value="{{ $jam }}" {{ $loop->first ? 'checked' : '' }}>
-                <span class="time-slot">{{ $jam }} WIB</span>
-              </label>
-            @endforeach
-          </div>
-        </div>
+            <div class="summary-row">
+                <span>Pemesan</span>
+                <strong id="sum-nama">-</strong>
+            </div>
+            <div class="summary-row">
+                <span>Paket Foto</span>
+                <strong id="sum-paket">{{ request('paket', 'Basic') }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Tanggal</span>
+                <strong id="sum-tanggal">-</strong>
+            </div>
+            <div class="summary-row">
+                <span>Jam Sesi</span>
+                <strong id="sum-jam">10:00</strong>
+            </div>
+            <div class="summary-row">
+                <span>Pembayaran</span>
+                <strong id="sum-payment">QRIS</strong>
+            </div>
 
-        <!-- Langkah 5: Catatan -->
-        <div class="form-group" style="margin-bottom: 0;">
-          <div class="step-title"><span class="step-badge">5</span> Catatan Tambahan (Opsional)</div>
-          <input type="text" id="catatan" name="catatan" class="form-control" placeholder="Contoh: Request background putih / bawa properti">
-        </div>
-      </div>
+            <div class="summary-total">
+                <span>Total Bayar</span>
+                <div class="total-price" id="sum-harga">
+                    @if (request('paket') == 'Couple')
+                        Rp120.000
+                    @elseif(request('paket') == 'Group')
+                        Rp180.000
+                    @else
+                        Rp75.000
+                    @endif
+                </div>
+            </div>
 
-      <!-- Kolom Kanan: Ringkasan Live -->
-      <aside class="summary-card">
-        <div class="summary-title">RINGKASAN RESERVASI</div>
+            <div class="info-note">
+                Harap datang 10 menit sebelum jadwal sesi dimulai. Pembatalan atau ubah jadwal maksimal H-1.
+            </div>
 
-        <div class="summary-row">
-          <span>Nama Pemesan</span>
-          <strong id="sum-nama">-</strong>
+            <button type="submit" class="btn-submit">KONFIRMASI RESERVASI</button>
         </div>
-        <div class="summary-row">
-          <span>Paket Dipilih</span>
-          <strong id="sum-paket">Basic</strong>
-        </div>
-        <div class="summary-row">
-          <span>Tanggal</span>
-          <strong id="sum-tanggal">Belum dipilih</strong>
-        </div>
-        <div class="summary-row">
-          <span>Jam Sesi</span>
-          <strong id="sum-jam">10:00 WIB</strong>
-        </div>
-
-        <div class="summary-total">
-          <span>Estimasi Total</span>
-          <div class="total-price" id="sum-harga">Rp75.000</div>
-        </div>
-
-        <div class="info-note">
-          Periksa kembali tanggal dan jam sebelum mengirim. Satu slot hanya untuk satu reservasi.
-        </div>
-
-        <button type="submit" class="btn-submit">KIRIM RESERVASI</button>
-      </aside>
     </form>
-  </main>
-
-  <!-- Script Ringkasan Otomatis -->
-  <script>
-    const inputNama = document.getElementById('nama');
-    const inputTanggal = document.getElementById('tanggal');
-    const paketRadios = document.querySelectorAll('input[name="paket"]');
-    const jamRadios = document.querySelectorAll('input[name="jam"]');
-
-    function updateSummary() {
-      document.getElementById('sum-nama').textContent = inputNama.value.trim() || '-';
-      document.getElementById('sum-tanggal').textContent = inputTanggal.value || 'Belum dipilih';
-
-      const selectedPaket = document.querySelector('input[name="paket"]:checked');
-      if (selectedPaket) {
-        document.getElementById('sum-paket').textContent = selectedPaket.value;
-        document.getElementById('sum-harga').textContent = selectedPaket.dataset.harga;
-      }
-
-      const selectedJam = document.querySelector('input[name="jam"]:checked');
-      if (selectedJam) {
-        document.getElementById('sum-jam').textContent = selectedJam.value + ' WIB';
-      }
-    }
-
-    inputNama.addEventListener('input', updateSummary);
-    inputTanggal.addEventListener('change', updateSummary);
-    paketRadios.forEach(r => r.addEventListener('change', updateSummary));
-    jamRadios.forEach(r => r.addEventListener('change', updateSummary));
-
-    updateSummary();
-  </script>
-
-</body>
-</html>
+@endsection

@@ -1,42 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReservasiController;
 
-// 01. Halaman Beranda
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Halaman Publik (Pelanggan)
+Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/paket-foto', fn () => view('paket'))->name('paket.index');
+Route::get('/reservasi', [ReservasiController::class, 'create'])->name('reservasi');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::get('/status', [ReservasiController::class, 'status'])->name('status');
 
-// 02. Halaman Daftar Paket Foto
-Route::get('/paket-foto', function () {
-    return view('paket');
-})->name('paket.index');
+// Login & Logout Admin (Tanpa Register)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// 03. Halaman Form Reservasi
-Route::get('/reservasi', function () {
-    return view('reservasi');
-})->name('reservasi');
-
-// Proses Simpan Data Form ke Session lalu pindah ke Status
-Route::post('/reservasi', function (Request $request) {
-    $dataReservasi = [
-        'kode'           => '#BK' . rand(100, 999),
-        'nama'           => $request->nama,
-        'paket'          => $request->paket,
-        'tanggal'        => date('d/m/Y', strtotime($request->tanggal)),
-        'jam'            => $request->jam,
-        'payment_method' => $request->payment_method ?? 'Transfer Bank / QRIS',
-        'catatan'        => $request->catatan,
-    ];
-
-    session(['reservasi_terbaru' => $dataReservasi]);
-
-    return redirect()->route('status');
-})->name('reservasi.store');
-
-// 04. Halaman Status Reservasi
-Route::get('/status', function () {
-    $reservasi = session('reservasi_terbaru');
-    return view('status', compact('reservasi'));
-})->name('status');
+// Halaman Khusus Admin (Wajib Login)
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/reservasi', [ReservasiController::class, 'adminIndex'])->name('admin.reservasi');
+    Route::patch('/admin/reservasi/{id}', [ReservasiController::class, 'updateStatus'])->name('admin.reservasi.update');
+});

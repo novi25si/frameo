@@ -61,9 +61,12 @@
       padding: 0 24px;
     }
 
-    /* Hero Banner Oranye Lembut */
+    /* Hero Banner dengan Background Gambar */
     .hero-box {
-      background-color: #ffedd5;
+      background-image: linear-gradient(to right, rgba(255, 237, 213, 0.95) 45%, rgba(255, 237, 213, 0.45) 100%), url("{{ asset('background.jpg') }}");
+      background-size: cover;
+      background-position: right center;
+      background-repeat: no-repeat;
       border: 1px solid #fed7aa;
       border-radius: 16px;
       padding: 48px 44px;
